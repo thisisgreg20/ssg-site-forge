@@ -1,6 +1,12 @@
 import unittest
 from textnode import TextNode, TextType
-from inline_markdown import split_nodes_delimiter, extract_markdown_images, extract_markdown_links
+from inline_markdown import (
+    split_nodes_delimiter, 
+    extract_markdown_images, 
+    extract_markdown_links, 
+    split_nodes_image, 
+    split_nodes_link
+)
 
 class TestInlineMarkdown(unittest.TestCase):
     def test_split_code(self):
@@ -56,6 +62,43 @@ class TestInlineMarkdown(unittest.TestCase):
         text = "Go to [About](/about-us)"
         matches = extract_markdown_links(text)
         self.assertEqual(matches, [("About", "/about-us")])
+
+    def test_split_image(self):
+        node = TextNode(
+            "This is text with an image ![boots](https://i.imgur.com/WZZ7L81.png) and another ![bear](https://i.imgur.com/fjrU4V1.png)",
+            TextType.TEXT,
+        )
+        new_nodes = split_nodes_image([node])
+        self.assertListEqual(
+            [
+                TextNode("This is text with an image ", TextType.TEXT),
+                TextNode("boots", TextType.IMAGE, "https://i.imgur.com/WZZ7L81.png"),
+                TextNode(" and another ", TextType.TEXT),
+                TextNode("bear", TextType.IMAGE, "https://i.imgur.com/fjrU4V1.png"),
+            ],
+            new_nodes,
+        )
+
+    def test_split_link(self):
+        node = TextNode(
+            "Click [here](https://boot.dev) to learn coding!",
+            TextType.TEXT,
+        )
+        new_nodes = split_nodes_link([node])
+        self.assertListEqual(
+            [
+                TextNode("Click ", TextType.TEXT),
+                TextNode("here", TextType.LINK, "https://boot.dev"),
+                TextNode(" to learn coding!", TextType.TEXT),
+            ],
+            new_nodes,
+        )
+
+    def test_split_no_links(self):
+        node = TextNode("Just plain text, no loot here.", TextType.TEXT)
+        new_nodes = split_nodes_link([node])
+        self.assertEqual(len(new_nodes), 1)
+        self.assertEqual(new_nodes[0].text, "Just plain text, no loot here.")
 
 if __name__ == "__main__":
     unittest.main()
