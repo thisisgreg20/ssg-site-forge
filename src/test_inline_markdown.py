@@ -1,6 +1,6 @@
 import unittest
 from textnode import TextNode, TextType
-from inline_markdown import split_nodes_delimiter
+from inline_markdown import split_nodes_delimiter, extract_markdown_images, extract_markdown_links
 
 class TestInlineMarkdown(unittest.TestCase):
     def test_split_code(self):
@@ -29,6 +29,33 @@ class TestInlineMarkdown(unittest.TestCase):
 
         self.assertEqual(len(new_nodes), 1)
         self.assertEqual(new_nodes[0], node)
+
+    def test_extract_images(self):
+        text = "This is an image ![boots](https://boot.dev/wizard_bear.png)"
+        matches = extract_markdown_images(text)
+        # We expect a list containing one tuple: (alt_text, url)
+        self.assertEqual(matches, [("boots", "https://boot.dev/wizard_bear.png")])
+
+    def test_extract_links(self):
+        text = "Check out [Boot.dev](https://www.boot.dev) for more magic."
+        matches = extract_markdown_links(text)
+        self.assertEqual(matches, [("Boot.dev", "https://www.boot.dev")])
+
+    def test_extract_multiple(self):
+        text = "Link [one](url1) and link [two](url2)"
+        matches = extract_markdown_links(text)
+        self.assertEqual(matches, [("one", "url1"), ("two", "url2")])
+
+    def test_no_false_positives(self):
+        # The Link extractor should NOT catch images
+        text = "This is an image ![alt](url)"
+        matches = extract_markdown_links(text)
+        self.assertEqual(len(matches), 0)
+
+    def test_relative_links(self):
+        text = "Go to [About](/about-us)"
+        matches = extract_markdown_links(text)
+        self.assertEqual(matches, [("About", "/about-us")])
 
 if __name__ == "__main__":
     unittest.main()
