@@ -80,7 +80,11 @@ def text_to_children(text):
 
 def paragraph_to_html_node(markdown: str) -> ParentNode:
     lines = markdown.split("\n")
-    text = " ".join(lines)
+    new_lines = []
+    for line in lines:
+        new_line = line.strip()
+        new_lines.append(new_line)
+    text = " ".join(new_lines)
     children = text_to_children(text)
     return ParentNode("p", children)
 
@@ -91,7 +95,7 @@ def heading_to_html_node(markdown: str) -> ParentNode:
     return ParentNode(f"h{count}", children)
 
 def code_to_html_node(markdown: str) -> ParentNode:
-    textnode = TextNode(markdown[4:-3], TextType.CODE)
+    textnode = TextNode(markdown[4:-3], TextType.TEXT)
     htmlnode = text_node_to_html_node(textnode)
     codenode = ParentNode("code", [htmlnode])
     return ParentNode("pre", [codenode])
@@ -107,4 +111,3 @@ def quote_to_html_node(markdown: str) -> ParentNode:
 
 def unordered_list_to_html_node(markdown: str) -> ParentNode:
     pass
-

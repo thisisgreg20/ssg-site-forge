@@ -1,5 +1,5 @@
 import unittest
-from blocknode import BlockType, block_to_block_type
+from block_markdown import BlockType, block_to_block_type
 
 class TestBlockToBlockType(unittest.TestCase):
 
@@ -38,7 +38,7 @@ class TestBlockToBlockType(unittest.TestCase):
 
     def test_unordered_list_valid(self):
         block = "- Item 1\n- Item 2\n- Item 3"
-        self.assertEqual(block_to_block_type(block), BlockType.UNORDERED)
+        self.assertEqual(block_to_block_type(block), BlockType.ULIST)
 
     def test_unordered_list_invalid(self):
         # Missing a space after the dash on the second line
@@ -47,7 +47,7 @@ class TestBlockToBlockType(unittest.TestCase):
 
     def test_ordered_list_valid(self):
         block = "1. First item\n2. Second item\n3. Third item"
-        self.assertEqual(block_to_block_type(block), BlockType.ORDERED)
+        self.assertEqual(block_to_block_type(block), BlockType.OLIST)
 
     def test_ordered_list_invalid_start(self):
         # Must start exactly at 1
