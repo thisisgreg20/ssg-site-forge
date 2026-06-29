@@ -10,14 +10,14 @@ class BlockType(Enum):
     QUOTE = "quote"
     ULIST = "unordered_list"
     OLIST = "ordered_list"
-   
+
 def markdown_to_blocks(markdown):
     blocks = markdown.split("\n\n")
     filtered_blocks = []
     for block in blocks:
+        block = block.strip()
         if block == "":
             continue
-        block = block.strip()
         filtered_blocks.append(block)
     return filtered_blocks
 
@@ -82,8 +82,7 @@ def paragraph_to_html_node(markdown: str) -> ParentNode:
     lines = markdown.split("\n")
     new_lines = []
     for line in lines:
-        new_line = line.strip()
-        new_lines.append(new_line)
+        new_lines.append(line.strip())
     text = " ".join(new_lines)
     children = text_to_children(text)
     return ParentNode("p", children)
@@ -110,4 +109,15 @@ def quote_to_html_node(markdown: str) -> ParentNode:
     return ParentNode("blockquote", children)
 
 def unordered_list_to_html_node(markdown: str) -> ParentNode:
-    pass
+    lines = markdown.split("\n")
+    li_nodes = []
+    for line in lines:
+        li_nodes.append(ParentNode("li", text_to_children(line[2:])))
+    return ParentNode("ul", li_nodes)
+
+def ordered_list_to_html_node(markdown: str) -> ParentNode:
+    lines = markdown.split("\n")
+    li_nodes = []
+    for line in lines:
+        li_nodes.append(ParentNode("li", text_to_children(line.split(". ", 1)[1])))
+    return ParentNode("ol", li_nodes)
