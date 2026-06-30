@@ -1,7 +1,7 @@
 import os
 import shutil
 
-def copy_src_to_destination(source: str = "./static", destination: str = "./public"):
+def copy_src_to_destination(source: str = "./static", destination: str = "./docs"):
     if os.path.exists(destination):
         shutil.rmtree(destination)
     os.makedirs(destination)
